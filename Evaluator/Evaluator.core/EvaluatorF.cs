@@ -15,18 +15,22 @@ public class EvaluatorF
         string numero = string.Empty;
         foreach (char sequence in infix)
         {
-            if (char.IsDigit(sequence))
+            if (char.IsDigit(sequence) || sequence == ',')
             {
                 numero += sequence;
-                continue;
             }
-            if (IsOperator(sequence))
+            else if (IsOperator(sequence))
             {
+                if (numero.Length > 0)
+                {
+                    postfix += numero + " ";
+                    numero = "";
+                }
                 if (sequence == ')')
                 {
                     do
                     {
-                        postfix += stack.Pop();
+                        postfix += stack.Pop() + " ";
                     } while (stack.Peek() != '(');
                     stack.Pop();
                 }
@@ -40,7 +44,7 @@ public class EvaluatorF
                         }
                         else
                         {
-                            postfix += stack.Pop();
+                            postfix += stack.Pop() + " ";
                             stack.Push(sequence);
                         }
                     }
@@ -50,16 +54,16 @@ public class EvaluatorF
                     }
                 }
             }
-            else
+        }
+            if (numero.Length > 0)
             {
-                postfix += sequence;
+                postfix += numero + " ";
             }
-        }
-        while (stack.Count > 0)
-        {
-            postfix += stack.Pop();
-        }
-        return postfix;
+            while (stack.Count > 0)
+            {
+                postfix += stack.Pop() + " ";
+            }
+            return postfix;
     }
     private static bool IsOperator(char item) => item is '^' or '/' or '*' or '%' or '+' or '-' or '(' or ')';
     private static int PriorityInfix(char op) => op switch
@@ -81,19 +85,33 @@ public class EvaluatorF
     private static double Calculate(string postfix)
     {
         var stack = new Stack<double>();
+        string numero = string.Empty;
         foreach (char sequence in postfix)
         {
-            if (IsOperator(sequence))
+            if (char.IsDigit(sequence) || sequence == ',')
+            {
+                numero += sequence;
+            }
+            else if (sequence == ' ')
+            {
+                if (numero.Length > 0)
+                {
+                    stack.Push(Convert.ToDouble(numero));
+                    numero = string.Empty;
+                }
+            }
+            else if (IsOperator(sequence))
             {
                 var op2 = stack.Pop();
                 var op1 = stack.Pop();
                 stack.Push(Calculate(op1, sequence, op2));
             }
-            else
-            {
-                stack.Push(Convert.ToDouble(sequence.ToString()));
-            }
         }
+            if (numero.Length > 0)
+            {
+                stack.Push(Convert.ToDouble(numero));
+            }
+        
         return stack.Peek();
     }
     private static double Calculate(double op1, char item, double op2) => item switch

@@ -12,11 +12,17 @@ public class EvaluatorF
     {
         var stack = new Stack<char>();
         var postfix = string.Empty;
-        foreach (char item in infix)
+        string numero = string.Empty;
+        foreach (char sequence in infix)
         {
-            if (IsOperator(item))
+            if (char.IsDigit(sequence))
             {
-                if (item == ')')
+                numero += sequence;
+                continue;
+            }
+            if (IsOperator(sequence))
+            {
+                if (sequence == ')')
                 {
                     do
                     {
@@ -28,25 +34,25 @@ public class EvaluatorF
                 {
                     if (stack.Count > 0)
                     {
-                        if (PriorityInfix(item) > PriorityStack(stack.Peek()))
+                        if (PriorityInfix(sequence) > PriorityStack(stack.Peek()))
                         {
-                            stack.Push(item);
+                            stack.Push(sequence);
                         }
                         else
                         {
                             postfix += stack.Pop();
-                            stack.Push(item);
+                            stack.Push(sequence);
                         }
                     }
                     else
                     {
-                        stack.Push(item);
+                        stack.Push(sequence);
                     }
                 }
             }
             else
             {
-                postfix += item;
+                postfix += sequence;
             }
         }
         while (stack.Count > 0)
@@ -75,17 +81,17 @@ public class EvaluatorF
     private static double Calculate(string postfix)
     {
         var stack = new Stack<double>();
-        foreach (char item in postfix)
+        foreach (char sequence in postfix)
         {
-            if (IsOperator(item))
+            if (IsOperator(sequence))
             {
                 var op2 = stack.Pop();
                 var op1 = stack.Pop();
-                stack.Push(Calculate(op1, item, op2));
+                stack.Push(Calculate(op1, sequence, op2));
             }
             else
             {
-                stack.Push(Convert.ToDouble(item.ToString()));
+                stack.Push(Convert.ToDouble(sequence.ToString()));
             }
         }
         return stack.Peek();

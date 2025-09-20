@@ -1,2 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Evaluator.Core;
+
+Console.WriteLine("Hello, Evaluator");
+
+var infix = "1+2";
+var result = EvaluatorF.Evaluate(infix);
+Console.WriteLine($"{infix} = {result}");
